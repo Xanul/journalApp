@@ -14,7 +14,6 @@ export const JournalPage = () => {
 
     dispatch( startNewNote() );
     
-
   }
 
   return (
