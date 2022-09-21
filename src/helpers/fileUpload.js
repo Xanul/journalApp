@@ -1,7 +1,5 @@
 export const fileUpload = async ( file ) => {
 
-  console.log(file);
-
   if (!file) throw new Error('No tenemos un archivo para subir')
 
   const cloudURL = `https://api.cloudinary.com/v1_1/xanul/upload`;
@@ -19,7 +17,6 @@ export const fileUpload = async ( file ) => {
       body: formData
     });
 
-    console.log(resp);
     if( !resp.ok ) throw new Error('No se pudo subir la imagen');
 
     const cloudResp = await resp.json();
