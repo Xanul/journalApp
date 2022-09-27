@@ -63,7 +63,6 @@ export const startLogout = () => {
 
     await logoutFirebase();
 
-
     dispatch( clearNotesOnLogout() )
     dispatch( logout() );
 

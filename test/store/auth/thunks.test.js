@@ -1,6 +1,6 @@
-import { loginWithEmailPassword, logoutFirebase, signInWithGoogle } from "../../../src/firebase/providers";
+import { loginWithEmailPassword, logoutFirebase, registerUserWithEmailPassword, signInWithGoogle } from "../../../src/firebase/providers";
 import { checkingCredentials, login, logout } from "../../../src/store/auth";
-import { checkingAuthentication, startGoogleSignIn, startLoginWithEmailPassword, startLogout } from "../../../src/store/auth/thunks"
+import { checkingAuthentication, startCreatingUserWithEmailPassword, startGoogleSignIn, startLoginWithEmailPassword, startLogout } from "../../../src/store/auth/thunks"
 import { clearNotesOnLogout } from "../../../src/store/journal/journalSlice";
 import { demoUser } from "../../fixtures/authFixtures";
 
@@ -58,11 +58,54 @@ describe('Pruebas en auth thunks', () => {
 
   });
 
+  test('startLoginWithEmailPassword debe llamar checkingCredentials y logout - error', async () => {
+
+    const loginReturnedData = { ok: false, errorMessage: "Error en autenticacion" }
+    const {errorMessage, ok} = loginReturnedData;
+    const formData = { email: demoUser.email, password: "ABC123" }
+    await loginWithEmailPassword.mockResolvedValue( loginReturnedData );
+
+    await startLoginWithEmailPassword(formData)(dispatch);
+    expect( dispatch ).toHaveBeenCalledWith( checkingCredentials() );
+    expect( dispatch ).toHaveBeenCalledWith( logout({errorMessage}) );
+
+
+  })
+
   test('startLogout debe de llamar logoutFirebase, clearNotes y logout', async () => {
 
     await startLogout()(dispatch);
     expect( logoutFirebase ).toHaveBeenCalled();
-    expect( dispatch ).toHaveBeenCalledWith( clearNotesOnLogout )
+    expect( dispatch ).toHaveBeenCalledWith( clearNotesOnLogout() );
+    expect( dispatch ).toHaveBeenCalledWith( logout() );
+
+  })
+
+  test('startCreatingUserWithEmailPassword debe llamar checkingCredentials y login  ', async () => {
+
+    const userCreationReturnedData = { ok: true, ...demoUser };
+    await registerUserWithEmailPassword.mockResolvedValue( userCreationReturnedData )
+    const {uid, email, displayName, photoURL} = userCreationReturnedData;
+    const formData = { email: demoUser.email, displayName: demoUser.displayName, password: "ABC123" };
+
+    await startCreatingUserWithEmailPassword(formData)(dispatch);
+    
+    expect( dispatch ).toHaveBeenCalledWith( checkingCredentials() );
+    expect( dispatch ).toHaveBeenCalledWith( login({uid, email, displayName, photoURL}) )
+
+  });
+
+  test('startCreatingUserWithEmailPassword debe llamar checkingCredentials y logout - error', async () => {
+
+    const userCreationReturnedData = { ok: false, errorMessage: "Error en la creacion de usuario" };
+    const { errorMessage } = userCreationReturnedData;
+    await registerUserWithEmailPassword.mockResolvedValue( userCreationReturnedData );
+    const formData = { email: demoUser.email, displayName: demoUser.displayName, password: "ABC123" };
+    
+    await startCreatingUserWithEmailPassword(formData)(dispatch);
+
+    expect( dispatch ).toHaveBeenCalledWith( checkingCredentials() );
+    expect( dispatch ).toHaveBeenCalledWith( logout( {errorMessage} ) );
 
   })
 
