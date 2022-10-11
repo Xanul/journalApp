@@ -1,4 +1,4 @@
-import { Google } from "@mui/icons-material";
+import Google from "@mui/icons-material/Google";
 import { Button, Grid, Link, TextField, Typography, Alert } from "@mui/material";
 import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,6 +25,9 @@ export const LoginPage = () => {
   const onSubmit = (event) => {
     event.preventDefault();
     // Se importa la accion del thunk y se envia como parametro el formState con el email y password
+
+    console.log(formState);
+
     dispatch( startLoginWithEmailPassword(formState) );
 
   };
@@ -32,7 +35,7 @@ export const LoginPage = () => {
   const onGoogleSignIn = (event) => {
     
     event.preventDefault();
-
+    // console.log('onGoogleSignIn');
     dispatch( startGoogleSignIn() );
 
   }
@@ -40,7 +43,10 @@ export const LoginPage = () => {
 
   return (
     <AuthLayout title="Login">
-      <form onSubmit={ onSubmit } className="animate__animated animate__fadeIn">
+      <form
+        aria-label="submit-form" 
+        onSubmit={ onSubmit } 
+        className="animate__animated animate__fadeIn">
           <Grid container>
             <Grid item xs={ 12 } sx={{mt:2}}>
               <TextField 
@@ -57,6 +63,9 @@ export const LoginPage = () => {
             <Grid item xs={ 12 } sx={{mt:2}}>
               <TextField 
                 label="Contraseña" 
+                inputProps={{
+                  'data-testid': 'password'
+                }}
                 type="password" 
                 placeholder="Contraseña" 
                 fullWidth
@@ -93,6 +102,7 @@ export const LoginPage = () => {
                   variant="contained" 
                   fullWidth
                   disabled={isAuthenticating}
+                  aria-label="google-btn"
                 >
                   <Google />
                   <Typography sx={{ml:2}}>Google</Typography>
