@@ -26,8 +26,6 @@ export const LoginPage = () => {
     event.preventDefault();
     // Se importa la accion del thunk y se envia como parametro el formState con el email y password
 
-    console.log(formState);
-
     dispatch( startLoginWithEmailPassword(formState) );
 
   };
